@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Attendance · Student Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar"></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>Daily Attendance Register</h1>
+        <p style="color:var(--muted); margin:4px 0 0;">Record daily attendance by course and monitor student presence.</p>
+      </div>
+      <div class="actions-row">
+        <a class="btn" href="http://localhost:8080/api/reports/export/attendance" target="_blank">📥 Export Attendance CSV</a>
+        <button class="btn btn-primary" id="saveAttendanceBtn">💾 Save Attendance</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label for="attendanceDate" style="margin:0; white-space:nowrap;">Date:</label>
+        <input type="date" id="attendanceDate" style="width:auto;">
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label for="courseSelect" style="margin:0; white-space:nowrap;">Course:</label>
+        <select id="courseSelect" style="min-width:200px;">
+          <option value="">All courses</option>
+        </select>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:8px;">
+        <button class="btn btn-sm" id="markAllPresentBtn">Mark all Present</button>
+        <button class="btn btn-sm" id="markAllAbsentBtn">Mark all Absent</button>
+      </div>
+    </div>
+
+    <!-- Attendance summary stats for selected date -->
+    <section class="stats" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom:20px;">
+      <div class="card stat" style="padding:14px 16px;">
+        <div class="label">Total Students</div>
+        <div class="value" id="kpiTotal">0</div>
+      </div>
+      <div class="card stat" style="padding:14px 16px;">
+        <div class="label">Present</div>
+        <div class="value" id="kpiPresent" style="color:var(--success)">0</div>
+      </div>
+      <div class="card stat" style="padding:14px 16px;">
+        <div class="label">Absent</div>
+        <div class="value" id="kpiAbsent" style="color:var(--danger)">0</div>
+      </div>
+      <div class="card stat" style="padding:14px 16px;">
+        <div class="label">Late / Excused</div>
+        <div class="value" id="kpiLate">0</div>
+      </div>
+      <div class="card stat" style="padding:14px 16px;">
+        <div class="label">Attendance %</div>
+        <div class="value" id="kpiRate" style="color:var(--primary)">0%</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Student Name</th>
+              <th>Course</th>
+              <th>Status</th>
+              <th>Remarks (Optional)</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceBody">
+            <tr><td colspan="5" class="empty">Loading student attendance register…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions" style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
+        <button class="btn btn-primary" id="bottomSaveBtn">💾 Save Attendance Records</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>

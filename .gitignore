@@ -1,0 +1,26 @@
+# Compiled class files & build output
+target/
+backend/target/
+*.class
+
+# Portable Maven distribution
+mvn-portable/
+backend/mvn-portable/
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Environment & local secrets
+.env
+application-local.properties
+
+# Operating System files
+.DS_Store
+Thumbs.db

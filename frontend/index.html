@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · Student Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar"></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>System Dashboard</h1>
+        <p style="color:var(--muted); margin:4px 0 0;">Overview of student enrollment, daily attendance, and academic performance.</p>
+      </div>
+      <div class="actions-row">
+        <a class="btn btn-primary" href="students.html?new=1">+ Add student</a>
+        <a class="btn" href="attendance.html">📅 Mark attendance</a>
+        <a class="btn" href="exams.html">📝 Record grades</a>
+      </div>
+    </div>
+
+    <section class="stats">
+      <div class="card stat">
+        <div class="label">Total Students</div>
+        <div class="value" id="statStudents">–</div>
+        <div class="hint">Active registered students</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Total Courses</div>
+        <div class="value" id="statCourses">–</div>
+        <div class="hint">Academic degree programs</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Today's Attendance</div>
+        <div class="value" id="statAttendance">–</div>
+        <div class="hint" id="statAttendanceHint">Calculating today's logs…</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Exam Pass Rate</div>
+        <div class="value" id="statPassRate">–</div>
+        <div class="hint" id="statPassRateHint">Based on all graded exams</div>
+      </div>
+    </section>
+
+    <div class="grid-2col">
+      <section class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h2 style="margin:0;">Recently enrolled students</h2>
+          <a href="students.html" class="btn btn-sm">View all</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Admission Date</th>
+              </tr>
+            </thead>
+            <tbody id="recentBody">
+              <tr><td colspan="4" class="empty">Loading recent students…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div>
+        <section class="card">
+          <h2>Course Enrollment</h2>
+          <div id="courseDistribution">
+            <div class="empty">Loading course distribution…</div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Today's Attendance Status</h2>
+          <div id="attendanceSnapshot">
+            <div class="empty">Loading today's status…</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    renderNavbar("dashboard");
+
+    (async function loadDashboard() {
+      try {
+        const [reportData, students] = await Promise.all([
+          ReportApi.dashboard(),
+          StudentApi.list()
+        ]);
+
+        // Stats
+        document.getElementById("statStudents").textContent = reportData.totalStudents;
+        document.getElementById("statCourses").textContent = reportData.totalCourses;
+
+        const att = reportData.attendanceStats || {};
+        if (att.totalMarkedToday > 0) {
+          document.getElementById("statAttendance").textContent = att.todayAttendanceRate + "%";
+          document.getElementById("statAttendanceHint").textContent =
+            `${att.presentToday} Present · ${att.absentToday} Absent · ${att.lateToday} Late`;
+        } else {
+          document.getElementById("statAttendance").textContent = "—";
+          document.getElementById("statAttendanceHint").textContent = "No attendance marked yet today";
+        }
+
+        const grades = reportData.gradeStats || {};
+        if (grades.totalGradesRecorded > 0) {
+          document.getElementById("statPassRate").textContent = grades.overallPassRate + "%";
+          document.getElementById("statPassRateHint").textContent =
+            `${grades.passedCount} Passed · ${grades.failedCount} Failed out of ${grades.totalGradesRecorded}`;
+        } else {
+          document.getElementById("statPassRate").textContent = "—";
+          document.getElementById("statPassRateHint").textContent = "No exams recorded yet";
+        }
+
+        // Recent students
+        const recent = [...students].sort((a, b) => b.id - a.id).slice(0, 6);
+        document.getElementById("recentBody").innerHTML = recent.length
+          ? recent.map(s => `
+              <tr>
+                <td><strong>${esc(s.studentCode)}</strong></td>
+                <td>${esc(s.firstName)} ${esc(s.lastName)}</td>
+                <td>${esc(s.course ? s.course.courseName : "—")}</td>
+                <td>${esc(s.admissionDate || "—")}</td>
+              </tr>`).join("")
+          : `<tr><td colspan="4" class="empty">No students registered yet.</td></tr>`;
+
+        // Course enrollment breakdown
+        const dist = reportData.courseDistribution || [];
+        const maxCount = Math.max(...dist.map(c => c.studentCount), 1);
+
+        document.getElementById("courseDistribution").innerHTML = dist.length
+          ? dist.map(c => {
+              const pct = Math.round((c.studentCount / maxCount) * 100);
+              return `
+                <div class="progress-item">
+                  <div class="progress-header">
+                    <span>${esc(c.courseName)}</span>
+                    <span style="color:var(--muted)">${c.studentCount} student${c.studentCount === 1 ? '' : 's'}</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" style="width: ${pct}%"></div>
+                  </div>
+                </div>`;
+            }).join("")
+          : `<div class="empty">No courses created yet.</div>`;
+
+        // Attendance snapshot
+        if (att.totalMarkedToday > 0) {
+          document.getElementById("attendanceSnapshot").innerHTML = `
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+              <span class="badge badge-present">Present: ${att.presentToday}</span>
+              <span class="badge badge-absent">Absent: ${att.absentToday}</span>
+              <span class="badge badge-late">Late: ${att.lateToday}</span>
+              <span class="badge badge-excused">Excused: ${att.excusedToday}</span>
+            </div>
+            <div style="font-size:0.88rem; color:var(--muted)">
+              Total marked today: <strong>${att.totalMarkedToday}</strong> (${att.todayAttendanceRate}% rate)
+            </div>
+          `;
+        } else {
+          document.getElementById("attendanceSnapshot").innerHTML = `
+            <div style="font-size:0.88rem; color:var(--muted); margin-bottom:10px;">
+              Attendance has not been recorded yet for today (${new Date().toLocaleDateString()}).
+            </div>
+            <a class="btn btn-sm btn-primary" href="attendance.html">Mark today's attendance</a>
+          `;
+        }
+
+      } catch (err) {
+        showToast(err.message, "error");
+        document.getElementById("recentBody").innerHTML =
+          `<tr><td colspan="4" class="empty">Could not load dashboard data.</td></tr>`;
+      }
+    })();
+  </script>
+</body>
+</html>

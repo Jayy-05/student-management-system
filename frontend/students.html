@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Students · Student Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar"></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>Students Directory</h1>
+        <p style="color:var(--muted); margin:4px 0 0;">Manage student profiles, view academic progress, and track records.</p>
+      </div>
+      <div class="actions-row">
+        <a class="btn" href="http://localhost:8080/api/reports/export/students" target="_blank">📥 Export CSV</a>
+        <button class="btn btn-primary" id="addBtn">+ Add student</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="Search by student ID, first or last name…" aria-label="Search students">
+      <select id="courseFilter" aria-label="Filter by course">
+        <option value="">All courses</option>
+      </select>
+      <select id="pageSizeSelect" style="width:auto;" aria-label="Page size">
+        <option value="10">10 per page</option>
+        <option value="25">25 per page</option>
+        <option value="50">50 per page</option>
+      </select>
+    </div>
+
+    <section class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Course</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentsBody">
+            <tr><td colspan="6" class="empty">Loading students…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-wrap" id="paginationWrap" style="display:none;">
+        <div class="pagination-info" id="paginationInfo">Showing 0 of 0 students</div>
+        <div class="pagination" id="paginationControls"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add / Edit modal -->
+  <div class="modal-backdrop" id="formModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+      <div class="modal-head">
+        <h2 id="formTitle">Add student</h2>
+        <button class="close-btn" data-close aria-label="Close">&times;</button>
+      </div>
+      <form id="studentForm" novalidate>
+        <div class="form-grid">
+          <div>
+            <label for="studentCode">Student ID / Code *</label>
+            <input id="studentCode" name="studentCode" maxlength="20" placeholder="e.g. STU101" required>
+            <div class="field-error" data-error="studentCode"></div>
+          </div>
+          <div>
+            <label for="courseId">Enrolled Course</label>
+            <select id="courseId" name="courseId"><option value="">— None —</option></select>
+            <div class="field-error" data-error="courseId"></div>
+          </div>
+          <div>
+            <label for="firstName">First name *</label>
+            <input id="firstName" name="firstName" maxlength="50" required>
+            <div class="field-error" data-error="firstName"></div>
+          </div>
+          <div>
+            <label for="lastName">Last name *</label>
+            <input id="lastName" name="lastName" maxlength="50" required>
+            <div class="field-error" data-error="lastName"></div>
+          </div>
+          <div>
+            <label for="email">Email address *</label>
+            <input id="email" name="email" type="email" maxlength="100" required>
+            <div class="field-error" data-error="email"></div>
+          </div>
+          <div>
+            <label for="phone">Mobile phone</label>
+            <input id="phone" name="phone" maxlength="15" inputmode="tel" placeholder="e.g. 9876543210">
+            <div class="field-error" data-error="phone"></div>
+          </div>
+          <div>
+            <label for="dob">Date of birth</label>
+            <input id="dob" name="dob" type="date">
+            <div class="field-error" data-error="dob"></div>
+          </div>
+          <div>
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+              <option value="">— Select —</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+            <div class="field-error" data-error="gender"></div>
+          </div>
+          <div>
+            <label for="admissionDate">Admission date</label>
+            <input id="admissionDate" name="admissionDate" type="date">
+            <div class="field-error" data-error="admissionDate"></div>
+          </div>
+          <div class="full">
+            <label for="address">Residential address</label>
+            <textarea id="address" name="address" rows="2" maxlength="255"></textarea>
+            <div class="field-error" data-error="address"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Save student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Student details modal -->
+  <div class="modal-backdrop" id="detailsModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+      <div class="modal-head">
+        <h2 id="detailsTitle">Student details</h2>
+        <button class="close-btn" data-close aria-label="Close">&times;</button>
+      </div>
+      <dl class="details" id="detailsBody"></dl>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report card modal -->
+  <div class="modal-backdrop" id="reportCardModal">
+    <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="reportCardTitle">
+      <div class="modal-head">
+        <h2 id="reportCardTitle">Official Academic Report Card</h2>
+        <button class="close-btn" data-close aria-label="Close">&times;</button>
+      </div>
+      <div id="reportCardContent">
+        <div class="empty">Loading report card…</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button type="button" class="btn" data-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance history modal -->
+  <div class="modal-backdrop" id="attendanceModal">
+    <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="attendanceModalTitle">
+      <div class="modal-head">
+        <h2 id="attendanceModalTitle">Student Attendance History</h2>
+        <button class="close-btn" data-close aria-label="Close">&times;</button>
+      </div>
+      <div id="attendanceHistoryContent">
+        <div class="empty">Loading attendance history…</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/students.js"></script>
+</body>
+</html>

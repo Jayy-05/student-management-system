@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Courses · Student Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar"></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>Academic Courses & Programs</h1>
+        <p style="color:var(--muted); margin:4px 0 0;">Create and configure academic courses for student enrollment.</p>
+      </div>
+    </div>
+
+    <section class="card" style="margin-bottom:24px">
+      <h2>Add new course</h2>
+      <form id="courseForm" novalidate>
+        <div class="form-grid">
+          <div>
+            <label for="courseName">Course name *</label>
+            <input id="courseName" maxlength="100" placeholder="e.g. Computer Science & Engineering" required>
+            <div class="field-error" data-error="courseName"></div>
+          </div>
+          <div>
+            <label for="duration">Duration</label>
+            <input id="duration" maxlength="30" placeholder="e.g. 4 years (8 semesters)">
+            <div class="field-error" data-error="duration"></div>
+          </div>
+          <div class="full">
+            <label for="description">Course description</label>
+            <input id="description" maxlength="255" placeholder="Brief overview of the curriculum and learning outcomes">
+            <div class="field-error" data-error="description"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" id="saveCourseBtn">+ Add course</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Existing courses</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Course Name</th>
+              <th>Duration</th>
+              <th>Enrolled Students</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="coursesBody">
+            <tr><td colspan="5" class="empty">Loading courses…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/courses.js"></script>
+</body>
+</html>

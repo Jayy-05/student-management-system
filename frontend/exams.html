@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Examinations & Grades · Student Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar"></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>Examinations & Academic Grading</h1>
+        <p style="color:var(--muted); margin:4px 0 0;">Manage course assessments, record student marks, and generate grade transcripts.</p>
+      </div>
+      <div class="actions-row">
+        <a class="btn" href="http://localhost:8080/api/reports/export/grades" target="_blank">📥 Export Grades CSV</a>
+        <button class="btn btn-primary" id="createExamBtn">+ Create new exam</button>
+      </div>
+    </div>
+
+    <!-- Exams List Section -->
+    <section class="card" style="margin-bottom:24px;">
+      <h2>Scheduled & Completed Examinations</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Exam Title</th>
+              <th>Course</th>
+              <th>Exam Date</th>
+              <th>Max Marks</th>
+              <th>Passing Marks</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="examsBody">
+            <tr><td colspan="6" class="empty">Loading examinations…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Grade Entry Section -->
+    <section class="card" id="gradingSection">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <div>
+          <h2 style="margin:0 0 4px 0;">Record & Review Student Marks</h2>
+          <span style="font-size:0.88rem; color:var(--muted)" id="selectedExamMeta">Select an exam to record marks</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <label for="selectExamForGrading" style="margin:0; font-size:0.9rem;">Exam:</label>
+          <select id="selectExamForGrading" style="min-width:240px;"></select>
+          <button class="btn btn-primary" id="saveGradesBtn" disabled>💾 Save All Grades</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Student Name</th>
+              <th>Marks Obtained</th>
+              <th>Percentage</th>
+              <th>Grade Letter</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="gradesBody">
+            <tr><td colspan="7" class="empty">Please select an exam from the dropdown above to load enrolled students.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions" style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
+        <button class="btn btn-primary" id="bottomSaveGradesBtn" disabled>💾 Save All Grades</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Create Exam Modal -->
+  <div class="modal-backdrop" id="examModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="examModalTitle">
+      <div class="modal-head">
+        <h2 id="examModalTitle">Create new examination</h2>
+        <button class="close-btn" data-close aria-label="Close">&times;</button>
+      </div>
+      <form id="examForm" novalidate>
+        <div class="form-grid">
+          <div class="full">
+            <label for="examTitle">Exam Title / Assessment Name *</label>
+            <input id="examTitle" name="title" maxlength="100" placeholder="e.g. Midterm Examination 2026" required>
+            <div class="field-error" data-error="title"></div>
+          </div>
+          <div>
+            <label for="examCourseId">Course Program</label>
+            <select id="examCourseId" name="courseId"><option value="">— All Courses —</option></select>
+            <div class="field-error" data-error="courseId"></div>
+          </div>
+          <div>
+            <label for="examDate">Exam Date *</label>
+            <input id="examDate" name="examDate" type="date" required>
+            <div class="field-error" data-error="examDate"></div>
+          </div>
+          <div>
+            <label for="maxMarks">Maximum Marks *</label>
+            <input id="maxMarks" name="maxMarks" type="number" step="0.5" min="1" value="100" required>
+            <div class="field-error" data-error="maxMarks"></div>
+          </div>
+          <div>
+            <label for="passingMarks">Passing Marks *</label>
+            <input id="passingMarks" name="passingMarks" type="number" step="0.5" min="1" value="40" required>
+            <div class="field-error" data-error="passingMarks"></div>
+          </div>
+          <div class="full">
+            <label for="examDescription">Description (Optional)</label>
+            <input id="examDescription" name="description" maxlength="255" placeholder="e.g. Units 1-4, closed book">
+            <div class="field-error" data-error="description"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveExamBtn">Create exam</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/exams.js"></script>
+</body>
+</html>

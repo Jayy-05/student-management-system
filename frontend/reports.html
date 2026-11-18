@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports & Analytics · Student Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar"></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>Reports, Analytics & Data Export</h1>
+        <p style="color:var(--muted); margin:4px 0 0;">Comprehensive system metrics, academic distributions, CSV data exports, and student transcripts.</p>
+      </div>
+    </div>
+
+    <!-- KPI Metrics -->
+    <section class="stats">
+      <div class="card stat">
+        <div class="label">Total Students</div>
+        <div class="value" id="kpiStudents">–</div>
+        <div class="hint">Registered active students</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Active Courses</div>
+        <div class="value" id="kpiCourses">–</div>
+        <div class="hint">Degree programs offered</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Today's Attendance</div>
+        <div class="value" id="kpiAttendance">–</div>
+        <div class="hint" id="kpiAttendanceHint">Calculated from daily register</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Overall Exam Pass Rate</div>
+        <div class="value" id="kpiPassRate">–</div>
+        <div class="hint" id="kpiPassRateHint">Across all assessments</div>
+      </div>
+    </section>
+
+    <!-- Analytics Visualizers -->
+    <div class="grid-2col">
+      <section class="card">
+        <h2>Course Enrollment Distribution</h2>
+        <div id="courseDistribution">
+          <div class="empty">Loading course distribution…</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Academic Grade Letter Distribution</h2>
+        <div id="gradeDistribution">
+          <div class="empty">Loading grade distribution…</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Data Export Center -->
+    <section class="card" style="margin-bottom:24px;">
+      <h2>Data Export Center</h2>
+      <p style="color:var(--muted); font-size:0.92rem; margin-top:-8px; margin-bottom:18px;">
+        Export complete database tables as UTF-8 encoded CSV spreadsheets for reporting, audit, and analysis.
+      </p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+        <div style="border:1px solid var(--border); border-radius:8px; padding:18px; display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+          <div>
+            <h3 style="margin:0 0 6px 0; font-size:1.05rem;">📋 Student Directory CSV</h3>
+            <p style="color:var(--muted); font-size:0.86rem; margin:0;">Complete profile records including ID, name, contact info, DOB, course program, and admission date.</p>
+          </div>
+          <a class="btn btn-primary" href="http://localhost:8080/api/reports/export/students" target="_blank">📥 Download Students CSV</a>
+        </div>
+
+        <div style="border:1px solid var(--border); border-radius:8px; padding:18px; display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+          <div>
+            <h3 style="margin:0 0 6px 0; font-size:1.05rem;">📅 Attendance Logs CSV</h3>
+            <p style="color:var(--muted); font-size:0.86rem; margin:0;">Historical attendance records including date, student code, course name, status (Present/Absent/Late), and remarks.</p>
+          </div>
+          <a class="btn btn-primary" href="http://localhost:8080/api/reports/export/attendance" target="_blank">📥 Download Attendance CSV</a>
+        </div>
+
+        <div style="border:1px solid var(--border); border-radius:8px; padding:18px; display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+          <div>
+            <h3 style="margin:0 0 6px 0; font-size:1.05rem;">🎓 Exam Results & Grades CSV</h3>
+            <p style="color:var(--muted); font-size:0.86rem; margin:0;">All examination results with student names, marks obtained, max marks, passing score, grade letters, and pass/fail status.</p>
+          </div>
+          <a class="btn btn-primary" href="http://localhost:8080/api/reports/export/grades" target="_blank">📥 Download Grades CSV</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Student Transcript Generator -->
+    <section class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px;">
+        <div>
+          <h2 style="margin:0 0 4px 0;">Student Academic Transcript Generator</h2>
+          <p style="color:var(--muted); margin:0; font-size:0.9rem;">Select any student to generate and print their official report card.</p>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <select id="studentSelect" style="min-width:260px;"></select>
+          <button class="btn btn-primary" id="generateReportBtn">Generate Report Card</button>
+        </div>
+      </div>
+
+      <div id="transcriptContainer">
+        <div class="empty">Please select a student above and click "Generate Report Card".</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>
