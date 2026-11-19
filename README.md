@@ -1,3 +1,9 @@
+
+
+https://github.com/user-attachments/assets/75ad7fdd-49a2-4fc1-9117-6f9bd8a01e62
+
+
+
 # Student Management System
 
 A full-stack, enterprise-grade **Student Management System** with a Spring Boot REST API backend and a responsive, zero-dependency HTML5/CSS3/JavaScript frontend.
